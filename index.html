@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Shreenath Team Work</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#38bdf8">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#e0f2fe;color:#000;font-size:16px}
+header{position:sticky;top:0;z-index:5;background:#38bdf8;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top));display:flex;align-items:center;gap:10px}
+header h1{font-size:18px;margin:0;flex:1;line-height:1.2}
+header small{display:block;font-weight:400;font-size:12px}
+.hbtn{background:rgba(255,255,255,.55);border:0;border-radius:10px;padding:8px 10px;font-size:14px;color:#000}
+main{padding:12px 12px 90px;max-width:720px;margin:0 auto}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:6px}
+.chip{flex:0 0 auto;border:0;background:#fff;border-radius:20px;padding:8px 14px;font-size:14px;color:#000}
+.chip.on{background:#38bdf8;font-weight:700}
+.chip b{margin-left:4px}
+.card{background:#fff;border-radius:14px;padding:12px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.card .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.card h3{margin:0;font-size:17px}
+.muted{color:#444;font-size:13px}
+.badge{font-size:12px;border-radius:10px;padding:3px 9px;white-space:nowrap;font-weight:600}
+.s-todo{background:#e5e7eb}.s-in_progress{background:#fde68a}.s-done{background:#bbf7d0}.s-incomplete{background:#fecaca}
+.bar{height:8px;background:#e5e7eb;border-radius:6px;margin-top:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:#0ea5e9}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.btn{border:0;border-radius:10px;background:#38bdf8;color:#000;padding:11px 14px;font-size:15px;font-weight:600}
+.btn.sec{background:#e0f2fe}.btn.red{background:#fecaca}.btn.full{width:100%}
+a.btn{text-decoration:none;display:inline-block}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;border-top:1px solid #bae6fd;padding-bottom:env(safe-area-inset-bottom);z-index:5}
+nav button{flex:1;border:0;background:none;padding:10px 4px;font-size:13px;color:#000}
+nav button.on{background:#bae6fd;font-weight:700}
+nav button span{display:block;font-size:20px}
+.fab{position:fixed;right:16px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:6;border:0;background:#0284c7;color:#fff;border-radius:28px;padding:14px 20px;font-size:16px;font-weight:700;box-shadow:0 3px 8px rgba(0,0,0,.3)}
+.fab.nonav{bottom:calc(20px + env(safe-area-inset-bottom))}
+#sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:20;display:none;align-items:flex-end;justify-content:center}
+#sheet.show{display:flex}
+#sheet .box{background:#fff;width:100%;max-width:720px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+label{display:block;font-size:14px;font-weight:600;margin:12px 0 4px}
+input,select,textarea{width:100%;font-size:16px;padding:11px;border:1px solid #7dd3fc;border-radius:10px;background:#fff;color:#000;font-family:inherit}
+textarea{min-height:70px}
+input[type=range]{padding:0}
+input[type=checkbox]{width:auto}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.seg button{border:2px solid #bae6fd;background:#fff;border-radius:10px;padding:11px 6px;font-size:15px;color:#000}
+.seg button.on{border-color:#0284c7;background:#e0f2fe;font-weight:700}
+.chk{display:flex;align-items:center;gap:10px;padding:8px 0;font-weight:400}
+.photos{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.photos img{width:92px;height:92px;object-fit:cover;border-radius:10px;border:1px solid #bae6fd}
+.hist{font-size:13px;border-left:3px solid #7dd3fc;padding-left:8px;margin:8px 0}
+.login{max-width:380px;margin:40px auto;padding:0 16px}
+.login h2{text-align:center}
+.banner{background:#fef3c7;border-radius:10px;padding:8px 12px;margin-bottom:10px;font-size:14px}
+.empty{text-align:center;color:#444;padding:30px 10px}
+#toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:#000;color:#fff;padding:10px 16px;border-radius:20px;z-index:30;display:none;max-width:90%;text-align:center}
+.err{color:#b91c1c;font-size:14px;margin-top:8px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="sheet"><div class="box" id="sheetbox"></div></div>
+<div id="toast"></div>
+
+<script>
+const URL_ = "https://tkmzlakdisjoiiwlrgje.supabase.co";
+const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRrbXpsYWtkaXNqb2lpd2xyZ2plIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU2NzEzNjAsImV4cCI6MjExMTI0NzM2MH0.d90Ee3W4C2KTiGsr-V0GFKt0zG3kp5kQ0bcYXYATYY4";
+const WORK_TYPES = ["Site survey","Material shifting","Structure erection","Panel installation","DC wiring","AC wiring","Inverter installation","Earthing & lightning arrestor","Meter / net-metering work","Testing & commissioning","Cleaning & finishing"];
+const STATUS = {todo:"To do",in_progress:"In progress",done:"Done",incomplete:"Incomplete"};
+
+let S = {token:null, me:null, tasks:[], sites:[], members:[], view:"work", filter:"today", who:"all", offline:false};
+const $ = id => document.getElementById(id);
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const today = () => new Date().toLocaleDateString("en-CA");
+const fmtDate = d => new Date(d+"T00:00:00").toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short"});
+const isAdmin = () => S.me && S.me.role === "admin";
+
+function toast(m){const t=$("toast");t.textContent=m;t.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display="none",2800);}
+
+async function api(fn, args){
+  const r = await fetch(URL_+"/rest/v1/rpc/"+fn,{method:"POST",headers:{apikey:KEY,Authorization:"Bearer "+KEY,"Content-Type":"application/json"},body:JSON.stringify(args||{})});
+  let j=null; try{j=await r.json();}catch(e){}
+  if(!r.ok){
+    const msg=(j&&j.message)||"Something went wrong";
+    if(msg.indexOf("SESSION_EXPIRED")>=0){ localStorage.removeItem("tw_token"); S.token=null; S.me=null; showLogin("Please login again."); throw new Error("Session expired"); }
+    if(msg.indexOf("NOT_ALLOWED")>=0) throw new Error("You are not allowed to do this");
+    throw new Error(msg);
+  }
+  return j;
+}
+const T = () => ({p_token:S.token});
+
+/* ---------- start ---------- */
+async function boot(){
+  if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+  S.token = localStorage.getItem("tw_token");
+  if(S.token){
+    try{ S.me = await api("me",T()); await loadAll(); render(); startTimer(); return; }
+    catch(e){ if(!S.token){return;} if(!navigator.onLine){ const c=loadCache(); if(c){S.me=c.me;S.tasks=c.tasks;S.sites=c.sites;S.members=c.members;S.offline=true;render();return;} } }
+  }
+  try{ const need = await api("setup_needed"); need ? showSetup() : showLogin(); }
+  catch(e){ showLogin("No internet. Please connect and reopen."); }
+}
+
+function saveCache(){ try{localStorage.setItem("tw_cache",JSON.stringify({me:S.me,tasks:S.tasks,sites:S.sites,members:S.members}));}catch(e){} }
+function loadCache(){ try{return JSON.parse(localStorage.getItem("tw_cache"));}catch(e){return null;} }
+
+async function loadAll(){
+  try{
+    const jobs=[api("list_tasks",T()),api("list_sites",T())];
+    if(isAdmin()) jobs.push(api("list_members",T()));
+    const r=await Promise.all(jobs);
+    S.tasks=r[0]||[]; S.sites=r[1]||[]; if(isAdmin()) S.members=r[2]||[];
+    S.offline=false; saveCache();
+  }catch(e){
+    if(!S.token) throw e;
+    const c=loadCache(); if(c && c.me && S.me && c.me.id===S.me.id){S.tasks=c.tasks;S.sites=c.sites;S.members=c.members;}
+    S.offline=true;
+  }
+}
+async function refresh(manual){ await loadAll(); render(); if(manual) toast(S.offline?"No internet":"Updated"); }
+function startTimer(){
+  clearInterval(startTimer.t);
+  startTimer.t=setInterval(()=>{ if(document.visibilityState==="visible" && S.token && !$("sheet").classList.contains("show")) refresh(); },60000);
+  document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible" && S.token && !$("sheet").classList.contains("show")) refresh(); });
+}
+
+/* ---------- login ---------- */
+function showLogin(msg){
+  $("app").innerHTML=`<div class="login"><h2>Shreenath<br>Team Work</h2>
+  <label>Phone number</label><input id="ph" type="tel" inputmode="numeric" autocomplete="username">
+  <label>PIN</label><input id="pin" type="password" inputmode="numeric" maxlength="6" autocomplete="current-password">
+  <div class="err" id="lerr">${esc(msg||"")}</div>
+  <div class="row"><button class="btn full" onclick="doLogin()">Login</button></div></div>`;
+}
+async function doLogin(){
+  try{
+    const r=await api("login",{p_phone:$("ph").value,p_pin:$("pin").value});
+    S.token=r.token; localStorage.setItem("tw_token",r.token); S.me=r; S.view="work"; S.filter="today";
+    await loadAll(); render(); startTimer();
+  }catch(e){ $("lerr").textContent=e.message; }
+}
+function showSetup(){
+  $("app").innerHTML=`<div class="login"><h2>First time setup</h2>
+  <p class="muted">Create the owner (admin) account. Do this now, before sharing the app link with anyone.</p>
+  <label>Your name</label><input id="sn">
+  <label>Your phone number</label><input id="sp" type="tel" inputmode="numeric">
+  <label>Choose a PIN (4 to 6 numbers)</label><input id="spin" type="password" inputmode="numeric" maxlength="6">
+  <div class="err" id="lerr"></div>
+  <div class="row"><button class="btn full" onclick="doSetup()">Create account</button></div></div>`;
+}
+async function doSetup(){
+  try{
+    if(!$("sn").value.trim()||!$("sp").value.trim()) throw new Error("Please fill name and phone");
+    const r=await api("setup_admin",{p_name:$("sn").value,p_phone:$("sp").value,p_pin:$("spin").value});
+    S.token=r.token; localStorage.setItem("tw_token",r.token); S.me=r;
+    await loadAll(); render(); startTimer();
+  }catch(e){ $("lerr").textContent=e.message; }
+}
+async function logout(){
+  try{ await api("logout",T()); }catch(e){}
+  localStorage.removeItem("tw_token"); localStorage.removeItem("tw_cache"); S.token=null; S.me=null; showLogin();
+}
+
+/* ---------- filters ---------- */
+const TODAY = () => today();
+const FILTERS = {
+  today:{label:"Today",fn:t=>t.work_date===TODAY()},
+  in_progress:{label:"In progress",fn:t=>t.status==="in_progress"},
+  incomplete:{label:"Incomplete",fn:t=>t.status==="incomplete"||(t.work_date<TODAY()&&t.status==="todo")},
+  upcoming:{label:"Upcoming",fn:t=>t.work_date>TODAY()&&t.status==="todo"},
+  done:{label:"Done",fn:t=>t.status==="done"}
+};
+function visibleTasks(){ return S.tasks.filter(t=>S.who==="all"||t.assigned_to===S.who); }
+
+/* ---------- render ---------- */
+function render(){
+  const a=isAdmin();
+  let body="";
+  if(S.view==="work") body=workView();
+  else if(S.view==="sites") body=sitesView();
+  else if(S.view==="team") body=teamView();
+  const nav=a?`<nav>
+    <button class="${S.view==="work"?"on":""}" onclick="go('work')"><span>📋</span>Work</button>
+    <button class="${S.view==="sites"?"on":""}" onclick="go('sites')"><span>🏠</span>Sites</button>
+    <button class="${S.view==="team"?"on":""}" onclick="go('team')"><span>👥</span>Team</button></nav>`:"";
+  const fab=a?`<button class="fab" onclick="${S.view==="sites"?"openSiteForm()":S.view==="team"?"openMemberForm()":"openTaskForm()"}">+ ${S.view==="sites"?"Add site":S.view==="team"?"Add member":"Add work"}</button>`:"";
+  $("app").innerHTML=`<header><h1>Shreenath Team Work<small>${esc(S.me.name)}${a?" (Admin)":""}</small></h1>
+    <button class="hbtn" onclick="refresh(true)">⟳ Refresh</button><button class="hbtn" onclick="logout()">Logout</button></header>
+    <main>${S.offline?'<div class="banner">No internet. Showing the last saved list. Changes need internet.</div>':""}${body}</main>${nav}${a?fab.replace('class="fab"','class="fab'+(a?'"':' nonav"')):""}`;
+}
+function go(v){S.view=v;render();window.scrollTo(0,0);}
+function setFilter(f){S.filter=f;render();}
+function setWho(v){S.who=v;render();}
+
+function workView(){
+  const vt=visibleTasks();
+  const chips=Object.keys(FILTERS).map(k=>{
+    const n=vt.filter(FILTERS[k].fn).length;
+    return `<button class="chip ${S.filter===k?"on":""}" onclick="setFilter('${k}')">${FILTERS[k].label}<b>${n}</b></button>`;
+  }).join("");
+  let who="";
+  if(isAdmin()){
+    who=`<select onchange="setWho(this.value)" style="margin-bottom:10px"><option value="all">All team members</option>${S.members.filter(m=>m.active).map(m=>`<option value="${m.id}" ${S.who===m.id?"selected":""}>${esc(m.name)}</option>`).join("")}</select>`;
+  }
+  let list=vt.filter(FILTERS[S.filter].fn);
+  list.sort((x,y)=> S.filter==="done" ? (y.updated_at>x.updated_at?1:-1) : (x.work_date===y.work_date ? x.site_name.localeCompare(y.site_name) : (x.work_date<y.work_date?-1:1)));
+  const cards=list.map(taskCard).join("") || `<div class="empty">${S.filter==="today"?"No work for today.":"Nothing here."}</div>`;
+  const hello=S.filter==="today"?`<p class="muted" style="margin:4px 2px 10px">${fmtDate(TODAY())}</p>`:"";
+  return `<div class="chips">${chips}</div>${who}${hello}${cards}`;
+}
+function taskCard(t){
+  const late = t.work_date<TODAY() && t.status!=="done";
+  return `<div class="card" onclick="openTask('${t.id}')">
+    <div class="top"><div><h3>${esc(t.site_name)}</h3><div class="muted">${esc(t.work_type)}</div></div>
+    <span class="badge s-${t.status}">${STATUS[t.status]}${t.status==="in_progress"?" "+t.progress+"%":""}</span></div>
+    <div class="muted" style="margin-top:6px">${isAdmin()?"👤 "+esc(t.assignee||"Not assigned")+" · ":""}📅 ${fmtDate(t.work_date)}${late?" <b style='color:#b91c1c'>(earlier date)</b>":""}${t.photo_count>0?" · 📷 "+t.photo_count:""}</div>
+    ${t.address?`<div class="muted">📍 ${esc(t.address)}</div>`:""}
+    ${t.note?`<div class="muted" style="margin-top:4px">📝 ${esc(t.note)}</div>`:""}
+    ${t.status!=="todo"?`<div class="bar"><i style="width:${t.progress}%"></i></div>`:""}
+  </div>`;
+}
+
+function sitesView(){
+  if(!S.sites.length) return `<div class="empty">No sites yet. Tap "+ Add site".</div>`;
+  return S.sites.map(s=>{
+    const open=S.tasks.filter(t=>t.site_id===s.id&&t.status!=="done");
+    const inc=open.filter(t=>FILTERS.incomplete.fn(t)).length;
+    const prog=open.filter(t=>t.status==="in_progress").length;
+    return `<div class="card" onclick="openSiteForm('${s.id}')">
+      <div class="top"><div><h3>${esc(s.name)}</h3><div class="muted">${esc(s.customer||"")}${s.capacity?" · "+esc(s.capacity):""}</div></div>
+      <span class="badge ${s.closed?"s-done":open.length?"s-in_progress":"s-todo"}">${s.closed?"Closed":open.length?open.length+" pending":"No pending"}</span></div>
+      ${s.address?`<div class="muted" style="margin-top:6px">📍 ${esc(s.address)}</div>`:""}
+      ${!s.closed&&open.length?`<div class="muted" style="margin-top:4px">${prog} in progress · ${inc} incomplete</div>`:""}
+    </div>`;
+  }).join("");
+}
+function teamView(){
+  return S.members.map(m=>`<div class="card" onclick="openMemberForm('${m.id}')">
+    <div class="top"><div><h3>${esc(m.name)}</h3><div class="muted">📞 ${esc(m.phone)}</div></div>
+    <span class="badge ${m.active?"s-done":"s-incomplete"}">${m.role==="admin"?"Admin":m.active?"Active":"Stopped"}</span></div></div>`).join("")
+    || `<div class="empty">No team members.</div>`;
+}
+
+/* ---------- sheet ---------- */
+function openSheet(html){ $("sheetbox").innerHTML=html; $("sheet").classList.add("show"); }
+function closeSheet(){ $("sheet").classList.remove("show"); }
+$("sheet").addEventListener("click",e=>{ if(e.target.id==="sheet") closeSheet(); });
+const mapLink = t => t.map_link || (t.address?"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(t.address):"");
+
+async function openTask(id){
+  const t=S.tasks.find(x=>x.id===id); if(!t) return;
+  let st=t.status, prog=t.progress;
+  const ml=mapLink(t);
+  openSheet(`<h2 style="margin:0">${esc(t.site_name)}</h2>
+  <div class="muted">${esc(t.work_type)} · ${fmtDate(t.work_date)}${isAdmin()?" · 👤 "+esc(t.assignee||"Not assigned"):""}</div>
+  ${t.address?`<div style="margin-top:6px">📍 ${esc(t.address)}</div>`:""}
+  ${t.customer?`<div class="muted">Customer: ${esc(t.customer)}</div>`:""}
+  ${t.details?`<div style="margin-top:8px;background:#f0f9ff;padding:8px;border-radius:8px">${esc(t.details)}</div>`:""}
+  <div class="row">${ml?`<a class="btn sec" href="${esc(ml)}" target="_blank" rel="noopener">🗺 Open map</a>`:""}${t.customer_phone?`<a class="btn sec" href="tel:${esc(t.customer_phone)}">📞 Call customer</a>`:""}</div>
+  <label>Work status</label>
+  <div class="seg" id="seg">${Object.keys(STATUS).map(k=>`<button data-k="${k}" class="${k===st?"on":""}">${STATUS[k]}</button>`).join("")}</div>
+  <div id="pwrap" style="display:${st==="in_progress"?"block":"none"}"><label>Progress: <span id="pv">${prog}</span>%</label><input type="range" id="pr" min="0" max="100" step="5" value="${prog}"></div>
+  <label id="nlabel">Note (what is done / what is pending)</label><textarea id="nt">${esc(t.note||"")}</textarea>
+  <div class="row"><button class="btn full" id="savebtn">Save update</button></div>
+  <label>Photos</label>
+  <div class="row" style="margin-top:0"><label class="btn sec" style="margin:0">📷 Add photo<input type="file" id="pf" accept="image/*" style="display:none"></label></div>
+  <div class="photos" id="photos"><span class="muted">Loading photos…</span></div>
+  <label>History</label><div id="hist"><span class="muted">Loading…</span></div>
+  ${isAdmin()?`<div class="row" style="margin-top:16px"><button class="btn sec" onclick="openTaskForm('${t.id}')">✏️ Edit work</button><button class="btn red" onclick="delTask('${t.id}')">Delete</button></div>`:""}
+  <div class="row"><button class="btn sec full" onclick="closeSheet()">Close</button></div>`);
+  document.querySelectorAll("#seg button").forEach(b=>b.onclick=()=>{
+    st=b.dataset.k; document.querySelectorAll("#seg button").forEach(x=>x.classList.toggle("on",x===b));
+    $("pwrap").style.display=st==="in_progress"?"block":"none";
+    $("nlabel").textContent = st==="incomplete" ? "Why incomplete? (reason)" : "Note (what is done / what is pending)";
+  });
+  $("pr").oninput=e=>{prog=+e.target.value;$("pv").textContent=prog;};
+  $("savebtn").onclick=async()=>{
+    if(st==="incomplete" && !$("nt").value.trim()){ toast("Please write the reason"); return; }
+    $("savebtn").disabled=true;
+    try{ await api("update_progress",{p_token:S.token,p_task_id:t.id,p_status:st,p_progress:prog,p_note:$("nt").value}); closeSheet(); await refresh(); toast("Saved"); }
+    catch(e){ toast(e.message); $("savebtn").disabled=false; }
+  };
+  $("pf").onchange=async e=>{
+    const f=e.target.files[0]; if(!f) return;
+    toast("Uploading photo…");
+    try{ const data=await compress(f); await api("add_photo",{p_token:S.token,p_task_id:t.id,p_data:data}); toast("Photo added"); loadPhotos(t.id); refresh(); }
+    catch(er){ toast(er.message||"Photo failed"); }
+    e.target.value="";
+  };
+  loadPhotos(t.id);
+  api("list_history",{p_token:S.token,p_task_id:t.id}).then(h=>{
+    const el=$("hist"); if(!el) return;
+    el.innerHTML=h.length?h.map(x=>`<div class="hist"><b>${STATUS[x.status]||""}${x.status==="in_progress"?" "+x.progress+"%":""}</b> · ${esc(x.by||"")}<br><span class="muted">${new Date(x.at).toLocaleString("en-IN",{day:"numeric",month:"short",hour:"numeric",minute:"2-digit"})}</span>${x.note?"<br>"+esc(x.note):""}</div>`).join(""):'<span class="muted">No updates yet.</span>';
+  }).catch(()=>{});
+}
+function loadPhotos(id){
+  api("list_photos",{p_token:S.token,p_task_id:id}).then(p=>{
+    const el=$("photos"); if(!el) return;
+    el.innerHTML=p.length?p.map(x=>`<img src="${x.data}" onclick="viewPhoto(this.src)">`).join(""):'<span class="muted">No photos yet.</span>';
+  }).catch(()=>{});
+}
+function viewPhoto(src){
+  const d=document.createElement("div");
+  d.style.cssText="position:fixed;inset:0;background:#000;z-index:40;display:flex;align-items:center;justify-content:center";
+  d.innerHTML=`<img src="${src}" style="max-width:100%;max-height:100%">`; d.onclick=()=>d.remove(); document.body.appendChild(d);
+}
+function compress(file){
+  return new Promise((res,rej)=>{
+    const img=new Image(), u=window.URL.createObjectURL(file);
+    img.onload=()=>{
+      let max=1000,q=.6,out="";
+      for(let i=0;i<6;i++){
+        const sc=Math.min(1,max/Math.max(img.width,img.height));
+        const c=document.createElement("canvas"); c.width=Math.round(img.width*sc); c.height=Math.round(img.height*sc);
+        c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+        out=c.toDataURL("image/jpeg",q);
+        if(out.length<500000) break;
+        max=Math.round(max*.8); q=Math.max(.4,q-.05);
+      }
+      window.URL.revokeObjectURL(u);
+      out.length<590000?res(out):rej(new Error("Photo too large"));
+    };
+    img.onerror=()=>rej(new Error("Cannot read this photo")); img.src=u;
+  });
+}
+
+/* ---------- admin: work form ---------- */
+function openTaskForm(id){
+  if(!S.sites.filter(s=>!s.closed).length){ toast("Please add a site first"); closeSheet(); go("sites"); return; }
+  const t=id?S.tasks.find(x=>x.id===id):null;
+  const known=t?WORK_TYPES.includes(t.work_type):true;
+  const mem=S.members.filter(m=>m.active);
+  openSheet(`<h2 style="margin:0">${t?"Edit work":"Add work"}</h2>
+  <label>Site</label><select id="f_site">${S.sites.filter(s=>!s.closed||(t&&t.site_id===s.id)).map(s=>`<option value="${s.id}" ${t&&t.site_id===s.id?"selected":""}>${esc(s.name)}</option>`).join("")}</select>
+  <label>Type of work</label><select id="f_type">${WORK_TYPES.map(w=>`<option ${t&&t.work_type===w?"selected":""}>${esc(w)}</option>`).join("")}<option value="__other" ${known?"":"selected"}>Other…</option></select>
+  <input id="f_other" placeholder="Write the work" style="margin-top:8px;display:${known?"none":"block"}" value="${known?"":esc(t.work_type)}">
+  <label>Date</label><input type="date" id="f_date" value="${t?t.work_date:TODAY()}">
+  <label>${t?"Assign to":"Assign to (tick one or more)"}</label>
+  ${t?`<select id="f_who"><option value="">Not assigned</option>${mem.map(m=>`<option value="${m.id}" ${t.assigned_to===m.id?"selected":""}>${esc(m.name)}</option>`).join("")}</select>`
+     :mem.map(m=>`<label class="chk"><input type="checkbox" class="f_m" value="${m.id}"> ${esc(m.name)}</label>`).join("")}
+  <label>Instructions (optional)</label><textarea id="f_det">${t?esc(t.details||""):""}</textarea>
+  <div class="row"><button class="btn full" id="f_save">Save</button><button class="btn sec full" onclick="${t?`openTask('${t.id}')`:"closeSheet()"}">Cancel</button></div>`);
+  $("f_type").onchange=e=>{$("f_other").style.display=e.target.value==="__other"?"block":"none";};
+  $("f_save").onclick=async()=>{
+    const wt=$("f_type").value==="__other"?$("f_other").value.trim():$("f_type").value;
+    if(!wt){toast("Please write the work");return;}
+    if(!$("f_date").value){toast("Please choose date");return;}
+    const base={p_token:S.token,p_site_id:$("f_site").value,p_work_type:wt,p_details:$("f_det").value,p_work_date:$("f_date").value};
+    $("f_save").disabled=true;
+    try{
+      if(t){ await api("save_task",{...base,p_id:t.id,p_assigned_to:$("f_who").value||null}); }
+      else{
+        const ids=[...document.querySelectorAll(".f_m:checked")].map(x=>x.value);
+        if(!ids.length){ toast("Tick at least one team member"); $("f_save").disabled=false; return; }
+        for(const m of ids) await api("save_task",{...base,p_id:null,p_assigned_to:m});
+      }
+      closeSheet(); await refresh(); toast("Saved");
+    }catch(e){ toast(e.message); $("f_save").disabled=false; }
+  };
+}
+async function delTask(id){
+  if(!confirmBox("Delete this work?")) return;
+  try{ await api("delete_task",{p_token:S.token,p_id:id}); closeSheet(); await refresh(); toast("Deleted"); }catch(e){toast(e.message);}
+}
+function confirmBox(m){ try{return window.confirm(m);}catch(e){return true;} }
+
+/* ---------- admin: site form ---------- */
+function openSiteForm(id){
+  const s=id?S.sites.find(x=>x.id===id):null;
+  openSheet(`<h2 style="margin:0">${s?"Edit site":"Add site"}</h2>
+  <label>Site name *</label><input id="s_name" value="${s?esc(s.name):""}" placeholder="e.g. Patil residence, Karanja">
+  <label>Customer name</label><input id="s_cust" value="${s?esc(s.customer||""):""}">
+  <label>Customer phone</label><input id="s_cph" type="tel" inputmode="numeric" value="${s?esc(s.customer_phone||""):""}">
+  <label>Address</label><textarea id="s_addr">${s?esc(s.address||""):""}</textarea>
+  <label>Google Maps link (optional)</label><input id="s_map" value="${s?esc(s.map_link||""):""}">
+  <label>Capacity (e.g. 5 kW)</label><input id="s_cap" value="${s?esc(s.capacity||""):""}">
+  <label>Notes</label><textarea id="s_notes">${s?esc(s.notes||""):""}</textarea>
+  ${s?`<label class="chk"><input type="checkbox" id="s_closed" ${s.closed?"checked":""}> Site fully finished (close site)</label>`:""}
+  <div class="row"><button class="btn full" id="s_save">Save</button><button class="btn sec full" onclick="closeSheet()">Cancel</button></div>
+  ${s?`<div class="row"><button class="btn red full" id="s_del">Delete site and all its work</button></div>`:""}`);
+  $("s_save").onclick=async()=>{
+    if(!$("s_name").value.trim()){toast("Please write site name");return;}
+    $("s_save").disabled=true;
+    try{
+      await api("save_site",{p_token:S.token,p_id:s?s.id:null,p_name:$("s_name").value,p_customer:$("s_cust").value,p_customer_phone:$("s_cph").value,p_address:$("s_addr").value,p_map_link:$("s_map").value,p_capacity:$("s_cap").value,p_notes:$("s_notes").value,p_closed:s?$("s_closed").checked:false});
+      closeSheet(); await refresh(); toast("Saved");
+    }catch(e){toast(e.message);$("s_save").disabled=false;}
+  };
+  if(s) $("s_del").onclick=async()=>{
+    if(!confirmBox("Delete this site and ALL its work and photos? This cannot be undone.")) return;
+    try{ await api("delete_site",{p_token:S.token,p_id:s.id}); closeSheet(); await refresh(); toast("Deleted"); }catch(e){toast(e.message);}
+  };
+}
+
+/* ---------- admin: team form ---------- */
+function openMemberForm(id){
+  const m=id?S.members.find(x=>x.id===id):null;
+  openSheet(`<h2 style="margin:0">${m?"Edit member":"Add team member"}</h2>
+  <label>Name *</label><input id="m_name" value="${m?esc(m.name):""}">
+  <label>Phone number * (used to login)</label><input id="m_ph" type="tel" inputmode="numeric" value="${m?esc(m.phone):""}">
+  <label>${m?"New PIN (leave empty to keep old)":"PIN * (4 to 6 numbers)"}</label><input id="m_pin" inputmode="numeric" maxlength="6">
+  <label>Role</label><select id="m_role"><option value="member" ${m&&m.role==="member"?"selected":""}>Team member</option><option value="admin" ${m&&m.role==="admin"?"selected":""}>Admin</option></select>
+  ${m?`<label class="chk"><input type="checkbox" id="m_act" ${m.active?"checked":""}> Active (untick to stop login)</label>`:""}
+  <div class="row"><button class="btn full" id="m_save">Save</button><button class="btn sec full" onclick="closeSheet()">Cancel</button></div>`);
+  $("m_save").onclick=async()=>{
+    if(!$("m_name").value.trim()||!$("m_ph").value.trim()){toast("Please fill name and phone");return;}
+    $("m_save").disabled=true;
+    try{
+      await api("save_member",{p_token:S.token,p_id:m?m.id:null,p_name:$("m_name").value,p_phone:$("m_ph").value,p_pin:$("m_pin").value,p_role:$("m_role").value,p_active:m?$("m_act").checked:true});
+      closeSheet(); await refresh(); toast("Saved");
+    }catch(e){ toast(/duplicate|unique/i.test(e.message)?"This phone number is already added":e.message); $("m_save").disabled=false; }
+  };
+}
+
+boot();
+</script>
+</body>
+</html>
